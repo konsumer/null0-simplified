@@ -1,0 +1,13 @@
+{
+  "name": "null0",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "npx -y live-server --mount=/cart:./build/cart --mount=/host:./wbuild/host webroot",
+    "prestart": "npm run build:web && npm run build:cart",
+    "build:web": "emcmake cmake -G Ninja -B wbuild && cmake --build wbuild --target null0",
+    "build:native": "cmake -G Ninja -B build && cmake --build build --target null0",
+    "build:cart": "cmake -G Ninja -B build && cmake --build build --target example"
+  }
+}

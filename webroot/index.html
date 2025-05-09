@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <title>null0</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@easywasm/wasi": "https://esm.sh/@easywasm/wasi"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script type="module">
+      import { WasiPreview1 } from "@easywasm/wasi";
+      import loadHost from "./host/null0.mjs";
+
+      const debug = false;
+
+      async function loadCart(cartUrl, canvas) {
+        const cartName = cartUrl.split("/").pop();
+        return await loadHost({
+          canvas,
+          arguments: [cartName],
+          preRun(h) {
+            h.FS.createPreloadedFile("", cartName, cartUrl, true, false);
+
+            h.cart_callback_update = (screenPtr) => {
+              const screenSize = canvas.width * canvas.height * 4;
+              h.screen.data.set(
+                h.HEAPU8.subarray(screenPtr, screenPtr + screenSize),
+              );
+              h.ctx.putImageData(h.screen, 0, 0);
+            };
+
+            h.cart_callback_init = (wasmBytesPtr, wasmSize) => {
+              canvas.width = 640;
+              canvas.height = 480;
+              h.ctx = canvas.getContext("2d");
+              h.screen = h.ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+              const wasmBytes = h.HEAPU8.subarray(
+                wasmBytesPtr,
+                wasmBytesPtr + wasmSize,
+              );
+              const wasi_snapshot_preview1 = new WasiPreview1();
+              const imports = { wasi_snapshot_preview1, null0: {} };
+
+              // expose host-functions that are named _host_whatever as null0.whatever
+              for (const f of Object.keys(h)) {
+                if (f.startsWith("_host_")) {
+                  const func = f.replace(/^_host_/, "");
+                  imports.null0[func] = (...args) => {
+                    if (debug) {
+                      console.log(func, args);
+                    }
+                    h[f](...args);
+                  };
+                }
+              }
+
+              WebAssembly.instantiate(wasmBytes, imports).then(
+                ({ instance }) => {
+                  h.cart = instance.exports;
+                  wasi_snapshot_preview1.start(h.cart);
+                  if (h.cart.load) {
+                    h.cart.load();
+                  }
+                },
+              );
+              return true;
+            };
+          },
+        });
+      }
+
+      await loadCart("cart/example.null0", document.getElementById("canvas"));
+    </script>
+  </body>
+</html>
