@@ -9,11 +9,11 @@ EM_JS(bool, cart_init, (unsigned char *wasmBytes, unsigned int wasmSize), {
   return Module.cart_callback_init(wasmBytes, wasmSize);
 });
 
-EM_JS(bool, emscripten_cart_update, (void *screen_data), {
+EM_JS(bool, emscripten_cart_update, (void *screen), {
   if (Module?.cart?.update) {
     Module.cart.update();
   }
-  Module.cart_callback_update(screen_data);
+  Module.cart_callback_update(screen);
   return true;
 });
 
