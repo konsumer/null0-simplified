@@ -17,6 +17,8 @@
 
 static AppData appData = {};
 
+pntr_image *screen;
+
 char *copy_string_from_cart(unsigned int cart_pointer) {
   unsigned int size = cart_strlen(cart_pointer) + 1;
   return (char *)copy_memory_from_cart(cart_pointer, size);

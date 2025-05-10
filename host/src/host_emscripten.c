@@ -9,16 +9,16 @@ EM_JS(bool, cart_init, (unsigned char *wasmBytes, unsigned int wasmSize), {
   return Module.cart_callback_init(wasmBytes, wasmSize);
 });
 
-EM_JS(bool, emscripten_cart_update, (pntr_image * screen), {
+EM_JS(bool, emscripten_cart_update, (void *screen_data), {
   if (Module?.cart?.update) {
     Module.cart.update();
   }
-  Module.cart_callback_update(screen);
+  Module.cart_callback_update(screen_data);
   return true;
 });
 
 bool cart_update() {
-  return emscripten_cart_update(get_image(0));
+  return emscripten_cart_update(get_image(0)->data);
 }
 
 bool cart_close() {

@@ -6,5 +6,5 @@ int main() {
 }
 
 void update() {
-  clear(0, RED);
+  clear(0, GREEN);
 }

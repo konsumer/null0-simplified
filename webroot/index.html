@@ -37,7 +37,7 @@
               canvas.width = 640;
               canvas.height = 480;
               h.ctx = canvas.getContext("2d");
-              h.screen = h.ctx.getImageData(0, 0, canvas.width, canvas.height);
+              h.screen = new ImageData(canvas.width, canvas.height);
 
               const wasmBytes = h.HEAPU8.subarray(
                 wasmBytesPtr,
