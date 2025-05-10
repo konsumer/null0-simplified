@@ -2,10 +2,6 @@
 
 #pragma once
 
-#ifdef EMSCRIPTEN
-#include <emscripten.h>
-#endif
-
 #include "fs.h"
 #include "pntr.h"
 #include <stdbool.h>
@@ -14,6 +10,15 @@
 
 #define CVECTOR_LOGARITHMIC_GROWTH
 #include "cvector.h"
+
+// these are specifric to each host-type
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#else
+#include <wasm_c_api.h>
+#include <wasm_export.h>
+cvector_vector_type(NativeSymbol) null0_native_symbols = NULL;
+#endif
 
 // shared user-data that will be passed to all host-functions
 typedef struct AppData {
