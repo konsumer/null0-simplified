@@ -8,6 +8,7 @@ export const mem = new DataView(host.cart.memory.buffer);
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+// set a string in cart-mem
 mem.setString = (p, s) => {
   let i = 0;
   for (const b of encoder.encode(s)) {
@@ -16,7 +17,18 @@ mem.setString = (p, s) => {
   mem.setUint8(i++ + p, 0);
 };
 
-mem.getString = (p) => {};
+// get a string from cart-mem
+mem.getString = (p) => {
+  let i = 0;
+  const out = new Uint8Array(1024);
+  while (i++ < 1024) {
+    const b = mem.getUint8(p + i);
+    if (b === 0) {
+      out[i] = b;
+    }
+  }
+  return decoder.decode(out);
+};
 
 // setup some basic color pointers in cart-mem
 
