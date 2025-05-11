@@ -20,14 +20,15 @@ mem.setString = (p, s) => {
 // get a string from cart-mem
 mem.getString = (p) => {
   let i = 0;
-  const out = new Uint8Array(1024);
+  const mem = new Uint8Array(host.cart.memory.buffer).subarray(p, 1024);
+  let len = 0;
   while (i++ < 1024) {
-    const b = mem.getUint8(p + i);
-    if (b === 0) {
-      out[i] = b;
+    if (mem[i] === 0) {
+      len = i;
+      break;
     }
   }
-  return decoder.decode(out);
+  return decoder.decode(mem.slice(0, len));
 };
 
 // setup some basic color pointers in cart-mem
