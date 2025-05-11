@@ -41,5 +41,5 @@ host._host_image_new(50, 50, BLACK);
 // get imagedata for screen
 export const getScreen = () => {
   const s = host.HEAP32[host._host_get_image(0) / 4];
-  return host.HEAPU8.slice(s, s + 50 * 50 * 4);
+  return host.HEAPU8.subarray(s, s + 50 * 50 * 4);
 };

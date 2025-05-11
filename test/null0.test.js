@@ -2,14 +2,14 @@ import { test } from "node:test";
 
 import { host, getScreen, mem, ptr, BLACK, RED, BLUE, GREEN } from "./host.js";
 
+const screen = getScreen();
+
 test("50x50 screen", ({ assert }) => {
-  const screen = getScreen();
   assert.equal(screen.length, 50 * 50 * 4);
 });
 
 test("clear", ({ assert }) => {
   host._host_clear(0, RED);
-  const screen = getScreen();
 
   // all bytes are set to [255,0,0,255]
   for (let p in screen) {
