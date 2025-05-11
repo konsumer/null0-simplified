@@ -38,8 +38,5 @@ export const ptr = 16;
 // create a fake screen to draw on (at id 0)
 host._host_image_new(50, 50, BLACK);
 
-// get imagedata for screen
-export const getScreen = () => {
-  const s = host.HEAP32[host._host_get_image(0) / 4];
-  return host.HEAPU8.subarray(s, s + 50 * 50 * 4);
-};
+const s = host.HEAP32[host._host_get_image(0) / 4];
+export const screen = host.HEAPU8.subarray(s, s + 50 * 50 * 4);

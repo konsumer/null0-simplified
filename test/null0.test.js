@@ -1,8 +1,6 @@
 import { test } from "node:test";
 
-import { host, getScreen, mem, ptr, BLACK, RED, BLUE, GREEN } from "./host.js";
-
-const screen = getScreen();
+import { host, screen, mem, ptr, BLACK, RED, BLUE, GREEN } from "./host.js";
 
 test("50x50 screen", ({ assert }) => {
   assert.equal(screen.length, 50 * 50 * 4);
