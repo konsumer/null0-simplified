@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.js",
+    "pretest": "npm run build:web",
     "start": "npx -y live-server --mount=/cart:./build/cart --mount=/host:./wbuild/host webroot",
     "prestart": "npm run build:web && npm run build:cart",
     "build:web": "emcmake cmake -G Ninja -B wbuild && cmake --build wbuild --target null0",
