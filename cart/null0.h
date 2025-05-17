@@ -37,52 +37,6 @@ typedef struct {
   i32 height;
 } Rectangle;
 
-// Sound parameters (96 bytes matching rFXGen WaveParams)
-typedef struct SfxParams {
-  // Random seed used to generate the wave
-  uint32_t randSeed;
-
-  // Wave type (square, sawtooth, sine, noise)
-  int waveType;
-
-  // Wave envelope parameters
-  float attackTime;
-  float sustainTime;
-  float sustainPunch;
-  float decayTime;
-
-  // Frequency parameters
-  float startFrequency;
-  float minFrequency;
-  float slide;
-  float deltaSlide;
-  float vibratoDepth;
-  float vibratoSpeed;
-  // float vibratoPhaseDelay;      // Unused in sfxr code.
-
-  // Tone change parameters
-  float changeAmount;
-  float changeSpeed;
-
-  // Square wave parameters
-  float squareDuty;
-  float dutySweep;
-
-  // Repeat parameters
-  float repeatSpeed;
-
-  // Phaser parameters
-  float phaserOffset;
-  float phaserSweep;
-
-  // Filter parameters
-  float lpfCutoff;
-  float lpfCutoffSweep;
-  float lpfResonance;
-  float hpfCutoff;
-  float hpfCutoffSweep;
-} SfxParams;
-
 typedef struct {
   u8 r;
   u8 g;
@@ -247,42 +201,6 @@ typedef enum MouseButton {
   MOUSE_BUTTON_RIGHT = 2,
   MOUSE_BUTTON_MIDDLE = 3,
 } MouseButton;
-
-typedef enum SfxPresetType {
-  SFX_COIN,
-  SFX_LASER,
-  SFX_EXPLOSION,
-  SFX_POWERUP,
-  SFX_HURT,
-  SFX_JUMP,
-  SFX_SELECT,
-  SFX_SYNTH
-} SfxPresetType;
-
-typedef enum SfxWaveType {
-  SFX_SQUARE,
-  SFX_SAWTOOTH,
-  SFX_SINE,
-  SFX_NOISE,
-  SFX_TRIANGLE,
-  SFX_PINK_NOISE
-} SfxWaveType;
-
-typedef enum FileType {
-  FILETYPE_REGULAR,   /**< a normal file */
-  FILETYPE_DIRECTORY, /**< a directory */
-  FILETYPE_SYMLINK,   /**< a symlink */
-  FILETYPE_OTHER      /**< something completely different like a device */
-} FileType;
-
-typedef struct FileInfo {
-  i64 filesize;      /**< size in bytes, -1 for non-files and unknown */
-  i64 modtime;       /**< last modification time */
-  i64 createtime;    /**< like modtime, but for file creation time */
-  i64 accesstime;    /**< like modtime, but for file access time */
-  FileType filetype; /**< File? Directory? Symlink? */
-  bool readonly;     /**< non-zero if read only, zero if writable. */
-} FileInfo;
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -454,36 +372,6 @@ void image_unload(u32 image);
 NULL0_IMPORT("subimage")
 u32 subimage(u32 image, i32 x, i32 y, i32 width, i32 height);
 
-// DRAW: PATH
-
-// Draw a curved line to new position
-NULL0_IMPORT("curve_to")
-void curve_to(u32 path, i32 x, i32 y, f32 radius);
-
-// Fill current path with a color
-NULL0_IMPORT("fill")
-void fill(u32 path, Color color);
-
-// Draw a line to new position
-NULL0_IMPORT("line_to")
-void line_to(u32 path, i32 x, i32 y);
-
-// Move new position path to this position withou drawing
-NULL0_IMPORT("move_to")
-void move_to(u32 path, i32 x, i32 y);
-
-// Connect start of a path to end
-NULL0_IMPORT("path_end")
-void path_end(u32 path);
-
-// Start a path
-NULL0_IMPORT("path_start")
-u32 path_start(u32 image);
-
-// Stroke current path with line
-NULL0_IMPORT("stroke")
-void stroke(u32 path, u32 thickness, Color color);
-
 // DRAW: SHAPES
 
 // Clear an image
@@ -564,86 +452,6 @@ void font_unload(u32 font);
 NULL0_IMPORT("text_measure")
 Dimensions text_measure(u32 font, char *text);
 
-// INPUT
-
-// Is the button currently down?
-NULL0_IMPORT("gamepad_button_down")
-bool gamepad_button_down(i32 gamepad, GamepadButton button);
-
-// Has the button been pressed? (tracks unpress/read correctly)
-NULL0_IMPORT("gamepad_button_pressed")
-bool gamepad_button_pressed(i32 gamepad, GamepadButton button);
-
-// Has the button been released? (tracks press/read correctly)
-NULL0_IMPORT("gamepad_button_released")
-bool gamepad_button_released(i32 gamepad, GamepadButton button);
-
-// Is the key currently down?
-NULL0_IMPORT("key_down")
-bool key_down(Key key);
-
-// Has the key been pressed? (tracks unpress/read correctly)
-NULL0_IMPORT("key_pressed")
-bool key_pressed(Key key);
-
-// Has the key been released? (tracks press/read correctly)
-NULL0_IMPORT("key_released")
-bool key_released(Key key);
-
-// Is the key currently up?
-NULL0_IMPORT("key_up")
-bool key_up(Key key);
-
-// Is the button currently down?
-NULL0_IMPORT("mouse_button_down")
-bool mouse_button_down(MouseButton button);
-
-// Has the button been pressed? (tracks unpress/read correctly)
-NULL0_IMPORT("mouse_button_pressed")
-bool mouse_button_pressed(MouseButton button);
-
-// Has the button been released? (tracks press/read correctly)
-NULL0_IMPORT("mouse_button_released")
-bool mouse_button_released(MouseButton button);
-
-// Is the button currently up?
-NULL0_IMPORT("mouse_button_up")
-bool mouse_button_up(MouseButton button);
-
-// Get current position of mouse
-NULL0_IMPORT("mouse_position")
-Vector mouse_position();
-
-// SOUND
-
-// Create a new sfxr from a .rfx file
-NULL0_IMPORT("sfx_load")
-SfxParams *sfx_load(char *filename);
-
-// Generate randomized preset sfxr params
-NULL0_IMPORT("sfx_preset")
-SfxParams *sfx_preset(SfxPresetType type);
-
-// Convert SfxParams to a sound
-NULL0_IMPORT("sfx_to_sound")
-u32 sfx_to_sound(SfxParams input);
-
-// Load a sound from a file in cart
-NULL0_IMPORT("sound_load")
-u32 sound_load(char *filename);
-
-// Play a sound
-NULL0_IMPORT("sound_play")
-void sound_play(u32 sound, bool loop);
-
-// Stop a sound
-NULL0_IMPORT("sound_stop")
-void sound_stop(u32 sound);
-
-// Unload a sound
-NULL0_IMPORT("sound_unload")
-void sound_unload(u32 sound);
-
 // UTILS: COLORS
 
 // Blend 2 colors together
@@ -673,58 +481,3 @@ Color *color_invert(Color color);
 // Tint a color with another color
 NULL0_IMPORT("color_tint")
 Color *color_tint(Color color, Color tint);
-
-// UTILS: FILESYSTEM
-
-// Write a file to persistant storage, appending to the end
-NULL0_IMPORT("file_append")
-bool file_append(char *filename, u8 *data, u32 byteSize);
-
-// Get info about a single file
-NULL0_IMPORT("file_info")
-FileInfo *file_info(char *filename);
-
-// Get list of files in a directory
-NULL0_IMPORT("file_list")
-char **file_list(char *dir, u32 *size);
-
-// Read a file from cart (or local persistant)
-NULL0_IMPORT("file_read")
-u8 *file_read(char *filename, u32 *bytesRead);
-
-// Write a file to persistant storage
-NULL0_IMPORT("file_write")
-bool file_write(char *filename, u8 *data, u32 byteSize);
-
-// UTILS: GENERAL
-
-// Get system-time (ms) since unix epoch
-NULL0_IMPORT("current_time")
-u64 current_time();
-
-// Get the change in time (seconds) since the last update run
-NULL0_IMPORT("delta_time")
-f32 delta_time();
-
-// Get a random integer between 2 numbers
-NULL0_IMPORT("random_int")
-i32 random_int(i32 min, i32 max);
-
-// max-size for trace messages
-#ifndef NULL0_TRACE_SIZE
-#define NULL0_TRACE_SIZE 1024 * 1024 * 1024
-#endif
-
-NULL0_IMPORT("trace")
-void _null0_trace_real(char *str);
-
-char null0_traceBuffer[NULL0_TRACE_SIZE];
-
-// Log a string
-void trace(const char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  vsnprintf(null0_traceBuffer, NULL0_TRACE_SIZE, format, args);
-  va_end(args);
-  _null0_trace_real(null0_traceBuffer);
-}
