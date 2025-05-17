@@ -49,8 +49,10 @@ pntr_image *get_image(unsigned int id) {
 }
 
 unsigned int add_image(pntr_image *image) {
+  if (image == NULL) {
+    return 0;
+  }
   unsigned int id = cvector_size(appData.images);
-  printf("add_image(): %u\n", id);
   cvector_push_back(appData.images, image);
   return id;
 }
@@ -165,7 +167,6 @@ HOST_FUNCTION(void, draw_triangle, (uint32_t imageID, int32_t x1, int32_t y1, in
   }
 })
 
-// Draw an image on an image
 HOST_FUNCTION(void, draw_image, (uint32_t destinationPtr, uint32_t srcPtr, int32_t posX, int32_t posY), {
   pntr_image *destination = appData.images[destinationPtr];
   pntr_image *src = appData.images[srcPtr];
@@ -274,11 +275,9 @@ HOST_FUNCTION(uint32_t, image_gradient, (int32_t width, int32_t height, uint32_t
   return add_image(pntr_gen_image_gradient(width, height, topLeft, topRight, bottomLeft, bottomRight));
 })
 
-// Load an image from a file in cart
 HOST_FUNCTION(uint32_t, image_load, (uint32_t filenamePtr), {
   char *filename = copy_string_from_cart(filenamePtr);
   pntr_image *i = pntr_load_image(filename);
-  printf("image_load(%s): %p\n", filename, (void *)i);
   return add_image(i);
 })
 

@@ -45,7 +45,7 @@ export default async function loadCart(cartUrl, canvas) {
               if (debug) {
                 console.log(func, args);
               }
-              h[f](...args);
+              return h[f](...args);
             };
           }
         }
