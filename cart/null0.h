@@ -481,3 +481,7 @@ Color *color_invert(Color color);
 // Tint a color with another color
 NULL0_IMPORT("color_tint")
 Color *color_tint(Color color, Color tint);
+
+// SOUND
+NULL0_IMPORT("soundfont_load")
+u32 soundfont_load(char *filename);

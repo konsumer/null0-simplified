@@ -20,12 +20,6 @@
 cvector_vector_type(NativeSymbol) null0_native_symbols = NULL;
 #endif
 
-// shared user-data that will be passed to all host-functions
-typedef struct AppData {
-  cvector_vector_type(pntr_font *) fonts;
-  cvector_vector_type(pntr_image *) images;
-} AppData;
-
 typedef struct {
   unsigned char r;
   unsigned char g;

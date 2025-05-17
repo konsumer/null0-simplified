@@ -2,6 +2,11 @@
 #include <emscripten.h>
 #endif
 
+// these are defined in host_sound.c
+#include "tsf.h"
+tsf *load_default_soundfont();
+unsigned int add_soundfont(tsf *soundfount);
+
 #include "fs.h"
 #include "host.h"
 #include <stddef.h>
@@ -65,7 +70,12 @@ int main(int argc, char *argv[]) {
 
   // load screen on image 0
   add_image(pntr_gen_image_color(640, 480, PNTR_BLACK));
+
+  // load default font on 0
   add_font(pntr_load_font_default());
+
+  // load default soundfont on 0
+  add_soundfont(load_default_soundfont());
 
   if (!cart_init(wasmBytes, wasmSize)) {
     free(fileData);

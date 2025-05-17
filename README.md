@@ -1,6 +1,6 @@
 This is a simplified version of [null0](https://github.com/konsumer/null0-pntr). The idea is that it's a game-engine where user-code (called cart) is in wasm. There is a web and native host that can run this cart.
 
-There is no path/sound/input stuff (for now) to keep it simple. IO operations will be done with WASI.
+There is no path-draw/input stuff (for now) to keep it simple. IO operations will be done with WASI.
 
 ## Libraries Used
 
