@@ -27,7 +27,7 @@ void update() {
   draw_circle(0, 320, 240, 95, 4, MAROON);
   draw_circle(0, 320, 240, 90, 4, SKYBLUE);
   draw_circle(0, 320, 240, 85, 4, VIOLET);
-  draw_circle(0, 320, 240, 80, 0, MAGENTA);
+  draw_circle(0, 320, 240, 80, 0, BLUE);
 
   draw_image_rotated(0, logo, (640 / 2), (480 / 2), i++, 135 / 2, 135 / 2, FILTER_NEARESTNEIGHBOR);
 }
