@@ -1,12 +1,22 @@
 #include "../null0.h"
 
+u32 logo = 0;
+
 int main() {
   printf("hello\n");
+  logo = image_load("logo.png");
+  if (logo == 0) {
+    printf("failed to load logo\n");
+  } else {
+    printf("logo loaded: %u\n", logo);
+  }
   return 0;
 }
 
 void update() {
   clear(0, BLACK);
+
+  draw_image(0, logo, 10, 100);
 
   draw_rectangle(0, 10, 10, 620, 460, 0, BLUE);
   draw_rectangle(0, 20, 20, 600, 440, 0, GREEN);
