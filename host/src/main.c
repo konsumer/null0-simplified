@@ -67,6 +67,8 @@ int main(int argc, char *argv[]) {
   add_image(pntr_gen_image_color(640, 480, PNTR_BLACK));
   add_font(pntr_load_font_default());
 
+  printf("main: setup screen & default-font\n");
+
   if (!cart_init(wasmBytes, wasmSize)) {
     free(fileData);
     printf("Error: Could not start cart '%s'\n", argv[1]);

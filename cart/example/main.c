@@ -1,12 +1,12 @@
 #include "../null0.h"
 
-u32 logo = 0;
+u32 logo;
 
 int main() {
   printf("hello\n");
   logo = image_load("assets/logo.png");
   if (logo == 0) {
-    printf("failed to load logo\n");
+    printf("failed to load logo: %u\n", logo);
   } else {
     printf("logo loaded: %u\n", logo);
   }
