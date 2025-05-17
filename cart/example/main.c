@@ -4,7 +4,7 @@ u32 logo = 0;
 
 int main() {
   printf("hello\n");
-  logo = image_load("logo.png");
+  logo = image_load("assets/logo.png");
   if (logo == 0) {
     printf("failed to load logo\n");
   } else {

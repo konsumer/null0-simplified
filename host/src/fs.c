@@ -42,6 +42,7 @@ unsigned char *fs_load_file(char *filename, uint32_t *bytesRead) {
   unsigned char *b = (unsigned char *)malloc(i.filesize);
   PHYSFS_sint64 br = PHYSFS_readBytes(f, b, i.filesize);
   *bytesRead = br;
+  printf("fs_load_file(%s): %u\n", filename, *bytesRead);
   PHYSFS_close(f);
   return b;
 }

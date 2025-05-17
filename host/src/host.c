@@ -1,8 +1,6 @@
 // implementation of shared functions (derived from host-specific
 // functions)
 
-#include "host.h"
-
 #define PNTR_IMPLEMENTATION
 #define PNTR_ENABLE_DEFAULT_FONT
 #define PNTR_ENABLE_VARGS
@@ -13,7 +11,8 @@
 #define PNTR_PIXELFORMAT_RGBA
 #define PNTR_LOAD_FILE fs_load_file
 #define PNTR_SAVE_FILE fs_save_file
-#include "pntr.h"
+
+#include "host.h"
 
 static AppData appData = {};
 
@@ -51,6 +50,7 @@ pntr_image *get_image(unsigned int id) {
 
 unsigned int add_image(pntr_image *image) {
   unsigned int id = cvector_size(appData.images);
+  printf("add_image(): %u\n", id);
   cvector_push_back(appData.images, image);
   return id;
 }
@@ -277,7 +277,9 @@ HOST_FUNCTION(uint32_t, image_gradient, (int32_t width, int32_t height, uint32_t
 // Load an image from a file in cart
 HOST_FUNCTION(uint32_t, image_load, (uint32_t filenamePtr), {
   char *filename = copy_string_from_cart(filenamePtr);
-  return add_image(pntr_load_image(filename));
+  pntr_image *i = pntr_load_image(filename);
+  printf("image_load(%s): %p\n", filename, (void *)i);
+  return add_image(i);
 })
 
 // Meaure an image (use 0 for screen)
