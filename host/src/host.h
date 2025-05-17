@@ -71,7 +71,10 @@ unsigned int add_image(pntr_image *image);
 unsigned int add_font(pntr_font *font);
 
 // get a color from cart
-pntr_color cart_color(unsigned int colorPtr);
+pntr_color copy_color_from_cart(unsigned int colorPtr);
+
+// set cart-color
+unsigned intcopy_color_to_cart(pntr_color color);
 
 /// host-specific macro for each host-type
 

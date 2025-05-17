@@ -1,7 +1,7 @@
 #include "../null0.h"
 
 int main() {
-  trace("hello");
+  printf("hello\n");
   return 0;
 }
 

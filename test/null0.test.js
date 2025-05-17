@@ -32,5 +32,6 @@ test("more complex drawing", ({ assert }) => {
   host._host_draw_rectangle(0, 10, 10, 40, 40, 0, BLUE);
   host._host_draw_rectangle(0, 20, 20, 30, 30, 0, GREEN);
   host._host_draw_rectangle(0, 30, 30, 20, 20, 0, RED);
+  host._host_draw_circle(0, 25, 25, 20, 0, BLACK);
   assert.snapshot(screen);
 });

@@ -27,11 +27,20 @@ unsigned int copy_string_to_cart(char *host_pointer) {
   return copy_memory_to_cart((void *)host_pointer, size);
 }
 
-pntr_color cart_color(unsigned int colorPtr) {
+pntr_color copy_color_from_cart(unsigned int colorPtr) {
   CartColor *c = copy_memory_from_cart(colorPtr, sizeof(CartColor));
   pntr_color ret = pntr_new_color(c->r, c->g, c->b, c->a);
   free(c);
   return ret;
+}
+
+unsigned int copy_color_to_cart(pntr_color color) {
+  CartColor *c = malloc(sizeof(CartColor));
+  c->r = color.rgba.r;
+  c->g = color.rgba.g;
+  c->b = color.rgba.b;
+  c->a = color.rgba.a;
+  return copy_memory_to_cart(c, sizeof(CartColor));
 }
 
 // These helpers make it easier to use the static appData elsewhere
@@ -69,21 +78,14 @@ EMSCRIPTEN_KEEPALIVE pntr_font *host_get_font(unsigned int id) {
 
 /// these are shared host-functions:
 
-// Log a string
-HOST_FUNCTION(void, trace, (uint32_t strPtr), {
-  char *str = copy_string_from_cart(strPtr);
-  printf("%s\n", str);
-  free(str);
-})
-
 // Clear an image
 HOST_FUNCTION(void, clear, (uint32_t imageID, uint32_t colorPtr), {
-  pntr_clear_background(appData.images[imageID], cart_color(colorPtr));
+  pntr_clear_background(appData.images[imageID], copy_color_from_cart(colorPtr));
 })
 
 // Draw an arc on an image. Set thickness to 0 for "fill".
 HOST_FUNCTION(void, draw_arc, (uint32_t imageID, int32_t centerX, int32_t centerY, float radius, float startAngle, float endAngle, int32_t segments, uint32_t thickness, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   if (thickness != 0) {
     pntr_draw_arc_thick(appData.images[imageID], centerX, centerY, radius, startAngle, endAngle, segments, thickness, color);
   } else {
@@ -93,7 +95,7 @@ HOST_FUNCTION(void, draw_arc, (uint32_t imageID, int32_t centerX, int32_t center
 
 // Draw a circle on an image. Set thickness to 0 for "fill".
 HOST_FUNCTION(void, draw_circle, (uint32_t imageID, int32_t centerX, int32_t centerY, int32_t radius, uint32_t thickness, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   if (thickness != 0) {
     pntr_draw_circle_thick(appData.images[imageID], centerX, centerY, radius, thickness, color);
   } else {
@@ -103,7 +105,7 @@ HOST_FUNCTION(void, draw_circle, (uint32_t imageID, int32_t centerX, int32_t cen
 
 // Draw an ellipse on an image. Set thickness to 0 for "fill".
 HOST_FUNCTION(void, draw_ellipse, (uint32_t imageID, int32_t centerX, int32_t centerY, int32_t radiusX, int32_t radiusY, uint32_t thickness, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   if (thickness != 0) {
     pntr_draw_ellipse_thick(appData.images[imageID], centerX, centerY, radiusX, radiusY, thickness, color);
   } else {
@@ -113,7 +115,7 @@ HOST_FUNCTION(void, draw_ellipse, (uint32_t imageID, int32_t centerX, int32_t ce
 
 // Draw a line on an image.
 HOST_FUNCTION(void, draw_line, (uint32_t imageID, int32_t startPosX, int32_t startPosY, int32_t endPosX, int32_t endPosY, uint32_t thickness, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   if (thickness != 0) {
     pntr_draw_line_thick(appData.images[imageID], startPosX, startPosY, endPosX, endPosY, thickness, color);
   } else {
@@ -123,12 +125,12 @@ HOST_FUNCTION(void, draw_line, (uint32_t imageID, int32_t startPosX, int32_t sta
 
 // Draw a single pixel on an image
 HOST_FUNCTION(void, draw_point, (uint32_t imageID, int32_t x, int32_t y, uint32_t colorPtr), {
-  pntr_draw_point(appData.images[imageID], x, y, cart_color(colorPtr));
+  pntr_draw_point(appData.images[imageID], x, y, copy_color_from_cart(colorPtr));
 })
 
 // Draw a rectangle on an image. Set thickness to 0 for "fill".
 HOST_FUNCTION(void, draw_rectangle, (uint32_t imageID, int32_t posX, int32_t posY, int32_t width, int32_t height, uint32_t thickness, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   if (thickness != 0) {
     pntr_draw_rectangle_thick(appData.images[imageID], posX, posY, width, height, thickness, color);
   } else {
@@ -138,7 +140,7 @@ HOST_FUNCTION(void, draw_rectangle, (uint32_t imageID, int32_t posX, int32_t pos
 
 // Draw a filled round-rectangle on an image. Set thickness to 0 for "fill".
 HOST_FUNCTION(void, draw_rectangle_rounded, (uint32_t imageID, int32_t x, int32_t y, int32_t width, int32_t height, int32_t cornerRadius, uint32_t thickness, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   if (thickness != 0) {
     pntr_draw_rectangle_thick_rounded(appData.images[imageID], x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius, thickness, color);
   } else {
@@ -149,13 +151,13 @@ HOST_FUNCTION(void, draw_rectangle_rounded, (uint32_t imageID, int32_t x, int32_
 // Draw text on an image
 HOST_FUNCTION(void, draw_text, (uint32_t imageID, uint32_t fontID, uint32_t textPtr, int32_t posX, int32_t posY, uint32_t colorPtr), {
   char *text = copy_string_from_cart(textPtr);
-  pntr_draw_text(appData.images[imageID], appData.fonts[fontID], text, posX, posY, cart_color(colorPtr));
+  pntr_draw_text(appData.images[imageID], appData.fonts[fontID], text, posX, posY, copy_color_from_cart(colorPtr));
   free(text);
 })
 
 // Draw a triangle on an image. Set thickness to 0 for "fill".
 HOST_FUNCTION(void, draw_triangle, (uint32_t imageID, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, uint32_t thickness, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   if (thickness != 0) {
     pntr_draw_triangle_thick(appData.images[imageID], x1, y1, x2, y2, x3, y3, thickness, color);
   } else {
@@ -195,7 +197,7 @@ HOST_FUNCTION(void, draw_image_scaled, (uint32_t destinationPtr, uint32_t srcPtr
 HOST_FUNCTION(void, draw_image_tint, (uint32_t destinationPtr, uint32_t srcPtr, int32_t posX, int32_t posY, uint32_t tintPtr), {
   pntr_image *destination = appData.images[destinationPtr];
   pntr_image *src = appData.images[srcPtr];
-  pntr_color tint = cart_color(tintPtr);
+  pntr_color tint = copy_color_from_cart(tintPtr);
   pntr_draw_image_tint(destination, src, posX, posY, tint);
 })
 
@@ -233,15 +235,15 @@ HOST_FUNCTION(void, image_color_invert, (uint32_t imagePtr), {
 // Replace a color in an image, in-place
 HOST_FUNCTION(void, image_color_replace, (uint32_t imagePtr, uint32_t colorPtr, uint32_t replacePtr), {
   pntr_image *image = appData.images[imagePtr];
-  pntr_color color = cart_color(colorPtr);
-  pntr_color replace = cart_color(replacePtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
+  pntr_color replace = copy_color_from_cart(replacePtr);
   pntr_image_color_replace(image, color, replace);
 })
 
 // Tint a color in an image, in-place
 HOST_FUNCTION(void, image_color_tint, (uint32_t imagePtr, uint32_t colorPtr), {
   pntr_image *image = appData.images[imagePtr];
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   pntr_image_color_tint(image, color);
 })
 
@@ -265,10 +267,10 @@ HOST_FUNCTION(void, image_flip, (uint32_t imagePtr, bool horizontal, bool vertic
 
 // Create a new image of a gradient
 HOST_FUNCTION(uint32_t, image_gradient, (int32_t width, int32_t height, uint32_t topLeftPtr, uint32_t topRightPtr, uint32_t bottomLeftPtr, uint32_t bottomRightPtr), {
-  pntr_color topLeft = cart_color(topLeftPtr);
-  pntr_color topRight = cart_color(topRightPtr);
-  pntr_color bottomLeft = cart_color(bottomLeftPtr);
-  pntr_color bottomRight = cart_color(bottomRightPtr);
+  pntr_color topLeft = copy_color_from_cart(topLeftPtr);
+  pntr_color topRight = copy_color_from_cart(topRightPtr);
+  pntr_color bottomLeft = copy_color_from_cart(bottomLeftPtr);
+  pntr_color bottomRight = copy_color_from_cart(bottomRightPtr);
   return add_image(pntr_gen_image_gradient(width, height, topLeft, topRight, bottomLeft, bottomRight));
 })
 
@@ -287,14 +289,14 @@ HOST_FUNCTION(uint32_t, image_measure, (uint32_t imagePtr), {
 
 // Create a new blank image
 HOST_FUNCTION(uint32_t, image_new, (int32_t width, int32_t height, uint32_t colorPtr), {
-  pntr_color color = cart_color(colorPtr);
+  pntr_color color = copy_color_from_cart(colorPtr);
   return add_image(pntr_gen_image_color(width, height, color));
 })
 
 // Resize an image, in-place
 HOST_FUNCTION(void, image_resize, (uint32_t imagePtr, int32_t newWidth, int32_t newHeight, int32_t offsetX, int32_t offsetY, uint32_t fillPtr), {
   pntr_image *image = appData.images[imagePtr];
-  pntr_color fill = cart_color(fillPtr);
+  pntr_color fill = copy_color_from_cart(fillPtr);
   pntr_image_resize_canvas(image, newWidth, newHeight, offsetX, offsetY, fill);
 })
 
@@ -381,4 +383,51 @@ HOST_FUNCTION(uint32_t, text_measure, (uint32_t fontPtr, uint32_t textPtr), {
   char *text = copy_string_from_cart(textPtr);
   pntr_vector dim = pntr_measure_text_ex(font, text, strlen(text));
   return copy_memory_to_cart(&dim, sizeof(dim));
+})
+
+// Blend 2 colors together
+HOST_FUNCTION(uint32_t, color_alpha_blend, (uint32_t dstPtr, uint32_t srcPtr), {
+  pntr_color dst = copy_color_from_cart(dstPtr);
+  pntr_color src = copy_color_from_cart(srcPtr);
+  return copy_color_to_cart(pntr_color_alpha_blend(dst, src));
+})
+
+// Interpolate colors
+HOST_FUNCTION(uint32_t, color_bilinear_interpolate, (uint32_t color00Ptr, uint32_t color01Ptr, uint32_t color10Ptr, uint32_t color11Ptr, float coordinateX, float coordinateY), {
+  pntr_color color00 = copy_color_from_cart(color00Ptr);
+  pntr_color color01 = copy_color_from_cart(color01Ptr);
+  pntr_color color10 = copy_color_from_cart(color10Ptr);
+  pntr_color color11 = copy_color_from_cart(color11Ptr);
+  return copy_color_to_cart(pntr_color_bilinear_interpolate(color00, color01, color10, color11, coordinateX, coordinateY));
+})
+
+// Change the brightness of a color
+HOST_FUNCTION(uint32_t, color_brightness, (uint32_t colorPtr, float factor), {
+  pntr_color color = copy_color_from_cart(colorPtr);
+  return copy_color_to_cart(pntr_color_brightness(color, factor));
+})
+
+// Change contrast of a color
+HOST_FUNCTION(uint32_t, color_contrast, (uint32_t colorPtr, float contrast), {
+  pntr_color color = copy_color_from_cart(colorPtr);
+  return copy_color_to_cart(pntr_color_contrast(color, contrast));
+})
+
+// Fade a color
+HOST_FUNCTION(uint32_t, color_fade, (uint32_t colorPtr, float alpha), {
+  pntr_color color = copy_color_from_cart(colorPtr);
+  return copy_color_to_cart(pntr_color_fade(color, alpha));
+})
+
+// Invert a color
+HOST_FUNCTION(uint32_t, color_invert, (uint32_t colorPtr), {
+  pntr_color color = copy_color_from_cart(colorPtr);
+  return copy_color_to_cart(pntr_color_invert(color));
+})
+
+// Tint a color with another color
+HOST_FUNCTION(uint32_t, color_tint, (uint32_t colorPtr, uint32_t tintPtr), {
+  pntr_color color = copy_color_from_cart(colorPtr);
+  pntr_color tint = copy_color_from_cart(tintPtr);
+  return copy_color_to_cart(pntr_color_tint(color, tint));
 })
